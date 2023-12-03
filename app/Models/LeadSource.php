@@ -12,7 +12,7 @@ class LeadSource extends Model
 
     protected $fillable = ['name'];
 
-    public function csutomers(): HasMany
+    public function customers(): HasMany
     {
         return $this->hasMany(Customer::class);
     }
