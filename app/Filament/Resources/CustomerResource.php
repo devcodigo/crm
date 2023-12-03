@@ -6,6 +6,7 @@ use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Models\Customer;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -37,6 +38,13 @@ class CustomerResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Select::make('lead_source_id')
                     ->relationship('leadSource','name'),
+                Forms\Components\Select::make('tags')
+                    ->relationship('tags','name')
+                    ->multiple()
+                    ->preload()
+                    
+                    
+
             ]);
     }
 
