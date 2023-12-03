@@ -11,7 +11,7 @@ class CreateLeadSource extends CreateRecord
     protected static string $resource = LeadSourceResource::class;
 
     protected function getRedirectUrl(): string
-{
+    {
     return $this->getResource()::getUrl('index');
-}
+    }
 }
