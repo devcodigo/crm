@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Customer;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 
@@ -25,5 +27,8 @@ class DatabaseSeeder extends Seeder
             'email'=> 'admin@admin.com'
 
         ]);
+
+        Customer::factory()->count(20)->create();
+        
     }
 }
