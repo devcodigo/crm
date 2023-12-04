@@ -15,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\CustomerResource\Pages\EditCustomer;
 
 class CustomerResource extends Resource
 {
@@ -55,7 +56,7 @@ class CustomerResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {
+    {  
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('first_name')
@@ -89,8 +90,13 @@ class CustomerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->hidden( fn($record) => $record->trashed()),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                
                 Tables\Actions\Action::make('Move to Stage')
+                    ->hidden( fn($record) => $record->trashed())
                     ->icon('heroicon-m-pencil-square')
                     ->form([
                         Forms\Components\Select::make('pipeline_stage_id')
@@ -122,12 +128,18 @@ class CustomerResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->hidden( fn(Pages\ListCustomers $livewire) => $livewire->activeTab == 'archived'),
+                    Tables\Actions\RestoreBulkAction::make()
+                    ->hidden( fn(Pages\ListCustomers $livewire) => $livewire->activeTab != 'archived'),
                 ]),
             ])
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
-            ]);
+            ])
+            ->recordUrl( fn($record) => $record->trashed() ? null : route('filament.admin.resources.customers.edit',$record));
+           
+        ;
     }
     
     public static function getRelations(): array
