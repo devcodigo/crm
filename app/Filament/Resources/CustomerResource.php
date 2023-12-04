@@ -41,7 +41,7 @@ class CustomerResource extends Resource
                 Forms\Components\Select::make('tags')
                     ->relationship('tags','name')
                     ->multiple()
-                    ->preload()
+                    ->preload(),
                     
                     
 
