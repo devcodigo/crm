@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Notifications\Notification;
 
 class PipelineStageResource extends Resource
 {
@@ -52,7 +53,41 @@ class PipelineStageResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('SetDefault')
+                    ->icon('heroicon-o-star')
+                    ->hidden(fn($record) => $record->is_default)
+                    ->requiresConfirmation(function(Tables\Actions\Action $action, $record) {
+                        $action->modalDescription('Are you sure you want to set this as default ?');
+                        $action->modalHeading('Set' . $record->name . 'as Dedault ');
+                        return $action;
+                    })
+                    ->action( function (PipelineStage $record) {
+                        PipelineStage::where('is_default',true)->update(['is_default' =>false]);
+                        $record->is_default = true;
+                        $record->save();
+                    }),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->action( function ($data,$record){
+                        if ($record->customers->count()>0) {
+                            Notification::make()
+                            ->danger()
+                            ->title('Pipeline Stage is in use')
+                            ->body('Pipeline stage is in use by customers')
+                            ->send();
+
+                            return;
+                        }
+
+                        Notification::make()
+                        ->success()
+                        ->title('OK')
+                        ->body('stage has been deleted')
+                        ->send();
+
+                        $record->delete();
+
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

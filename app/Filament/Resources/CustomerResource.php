@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Models\Customer;
+use App\Models\PipelineStage;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -42,7 +43,11 @@ class CustomerResource extends Resource
                     ->relationship('tags','name')
                     ->multiple()
                     ->preload(),
-                    
+                Forms\Components\Select::make('pipeline_stage_id')
+                    ->relationship('pipelineStage','name', function($query) {
+                        $query->orderBy('position','asc');
+                    })
+                    ->default(PipelineStage::where('is_default','true')->first()->id),
                     
 
             ]);
@@ -64,6 +69,8 @@ class CustomerResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('leadsource.name')
                     ->label('Lead source'),
+                Tables\Columns\TextColumn::make('pipelineStage.name')
+                    ->label('Pipeline'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
