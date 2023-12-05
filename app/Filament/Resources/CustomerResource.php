@@ -16,6 +16,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CustomerResource\Pages\EditCustomer;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
+use Filament\Infolists\Infolist;
 
 class CustomerResource extends Resource
 {
@@ -23,6 +27,44 @@ class CustomerResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function infoList(Infolist $infolist): Infolist
+    {
+        return $infolist
+        ->schema([
+            Section::make('Personal information')
+                ->schema([
+                    TextEntry::make('first_name'),
+                    TextEntry::make('last_name'),
+                ])
+                ->columns(),
+            Section::make('Contact information')
+                ->schema([
+                    TextEntry::make('email'),
+                    TextEntry::make('phone_number'),
+                ])
+                ->columns(),
+            Section::make('Additional details')
+                ->schema([
+                    TextEntry::make('description'),
+                ])
+                ->columns(),
+            Section::make('Lead and stage information')
+                ->schema([
+                    TextEntry::make('leadSource.name'),
+                    TextEntry::make('pipelineStage.name'),
+                ])
+                ->columns(),
+            Section::make('Pipeline stage history and notes')
+                ->schema([
+                    ViewEntry::make('pipelineStageLogs')
+                    ->label('')
+                    ->view('infolists.components.pipeline-stage-history-list'),
+                ])
+                ->collapsible(),
+        ]);
+    }
+
+    
     public static function form(Form $form): Form
     {
         return $form
@@ -137,7 +179,8 @@ class CustomerResource extends Resource
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
             ])
-            ->recordUrl( fn($record) => $record->trashed() ? null : route('filament.admin.resources.customers.edit',$record));
+           ->recordUrl( fn($record) => $record->trashed() ? null : route('filament.admin.resources.customers.view',$record));
+
            
         ;
     }
@@ -155,6 +198,7 @@ class CustomerResource extends Resource
             'index' => Pages\ListCustomers::route('/'),
             'create' => Pages\CreateCustomer::route('/create'),
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
+            'view' => Pages\ViewCustomer::route('/{record}'),
         ];
     }    
 }
