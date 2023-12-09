@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Customer;
 use App\Models\LeadSource;
 use App\Models\PipelineStage;
+use App\Models\Role;
 use App\Models\Tag;
 use Illuminate\Database\Seeder;
 use App\Models\User;
@@ -18,6 +19,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        $roles=["Admin","Employee"];
+
+        foreach ($roles as $role) {
+            Role::create(['name' => $role]);
+        }
+
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([
@@ -27,9 +35,15 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'Test admin',
-            'email'=> 'admin@admin.com'
+            'email'=> 'admin@admin.com',
+            'role_id' => Role::where('name','Admin')->first()?->id,
 
         ]);
+
+        User::factory()->count(10)->create([
+            'role_id' => Role::where('name','Employee')->first()?->id,  
+        ]);
+        
 
     
         $leadSources = ['Website','Twitter','Phone'];
@@ -78,6 +92,7 @@ class DatabaseSeeder extends Seeder
         Customer::factory()->count(10)->create([
                'pipeline_stage_id' => $defaultPipelineStage,
         ]);
+
 
 
     }

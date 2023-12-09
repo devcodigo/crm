@@ -16,6 +16,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CustomerResource\Pages\EditCustomer;
+use App\Models\Role;
+use App\Models\User;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -92,6 +94,13 @@ class CustomerResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Section::make('Employee information')
+                 ->schema([
+                    Forms\Components\Select::make('employee_id')
+                     ->options(User::where('role_id',Role::where('name','Employee')->first()->id)->pluck('name','id')),
+                 ])
+                 ->hidden(!auth()->user()->isAdmin()),
+            
                 Forms\Components\Section::make('Customer details')
                 ->schema([
                     Forms\Components\TextInput::make('first_name')

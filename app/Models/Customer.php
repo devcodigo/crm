@@ -15,7 +15,7 @@ class Customer extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['first_name','last_name','email','phone_number','description','lead_source_id','pipeline_stage_id'];
+    protected $fillable = ['first_name','last_name','email','phone_number','description','lead_source_id','pipeline_stage_id','employee_id'];
 
     public function leadSource(): BelongsTo {
         return $this->belongsTo(LeadSource::class);
@@ -39,6 +39,11 @@ class Customer extends Model
         return $this->hasMany(Document::class);
     }
 
+
+    public function employee() : BelongsTo {
+        return $this->belongsTo(User::class,'employee_id');
+    }
+
     public static function booted(): void
     {
         self::created(function (Customer $customer) {
@@ -49,4 +54,6 @@ class Customer extends Model
             ]);
         });
     }
+
+
 }
