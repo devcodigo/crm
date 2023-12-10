@@ -5,6 +5,7 @@ namespace App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource;
 use App\Models\Customer;
 use App\Models\PipelineStage;
+use App\Models\User;
 use Filament\Actions;
 
 use Filament\Resources\Pages\ListRecords;
@@ -27,6 +28,14 @@ class ListCustomers extends ListRecords
 
        $tabs['all']=Tab::make('All Customers')
        ->badge(Customer::count());
+
+       //dd(auth()->user());
+
+       if(!User::find(auth()->id())->isAdmin()) {
+        $tabs['my'] = Tab::make('My Customers')
+            ->badge(Customer::where('employee_id',auth()->id())->count())
+            ->modifyQueryUsing( fn($query) => $query->where('employee_id',auth()->id()) );
+       }
 
         $pipelineStages = PipelineStage::orderBy('position')->withCount('customers')->get();
 
