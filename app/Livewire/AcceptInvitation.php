@@ -116,7 +116,7 @@ class AcceptInvitation extends SimplePage
 
     public function getSubheading(): string
     {
-        return 'Create your user to acceopt an ivitation';
+        return 'Create your user to acceopt an ivitation to the system';
     }
 
    
